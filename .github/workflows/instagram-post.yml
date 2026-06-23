@@ -1,0 +1,40 @@
+name: Instagram - post auto NexanthisTD
+
+# Publie automatiquement 1 post Instagram par jour via l'API officielle Meta.
+on:
+  schedule:
+    # 18:00 heure de Paris = 16:00 UTC (heure d'ete). Ajuste si besoin.
+    - cron: "0 16 * * *"
+  # Permet de declencher manuellement depuis l'onglet Actions (bouton "Run workflow")
+  workflow_dispatch:
+    inputs:
+      post_id:
+        description: "Forcer un post precis (son 'id' dans content.json). Vide = rotation du jour."
+        required: false
+        default: ""
+      dry_run:
+        description: "1 = test a blanc (ne publie rien)"
+        required: false
+        default: "0"
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Publier le post
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          MEDIA_BRANCH: ${{ github.ref_name }}
+          POST_ID: ${{ github.event.inputs.post_id }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: python social/instagram/post.py
