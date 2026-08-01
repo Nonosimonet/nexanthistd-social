@@ -1,0 +1,49 @@
+name: Publish to Instagram
+
+on:
+  schedule:
+    # Vise une publication vers 15h UTC = 17h Paris (heure d'ete).
+    # On part ~15 min plus tot car GitHub Actions ne garantit pas l'heure des
+    # workflows planifies (file d'attente, pire aux minutes rondes -> d'ou :47)
+    # et Meta doit encore encoder la video avant publication.
+    # ATTENTION : le cron est en UTC et ne suit pas l'heure d'ete. Fin octobre,
+    # tout se decale d'une heure plus tot en heure de Paris (16h au lieu de 17h).
+    #
+    # La cadence reelle (1 post tous les 3 jours) est imposee par publish.mjs via
+    # MIN_DAYS_BETWEEN_POSTS, PAS par le cron : un cron "*/3" repart au 1er du mois
+    # et collerait deux posts d'affilee apres le 31.
+    - cron: "47 14 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # v5 : les actions en v4 tournent encore sur Node 20, deprecie sur les runners.
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Publish next due post
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          MEDIA_BASE_URL: https://raw.githubusercontent.com/${{ github.repository }}/main
+          MIN_DAYS_BETWEEN_POSTS: "3"
+        run: node scripts/publish.mjs
+
+      - name: Commit queue changes
+        run: |
+          git config user.name "nexanthis-bot"
+          git config user.email "actions@github.com"
+          git add posts/
+          git diff --cached --quiet || git commit -m "chore: move published post out of queue"
+          git push

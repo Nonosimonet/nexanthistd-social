@@ -1,8 +1,3 @@
-# Python
-__pycache__/
-*.pyc
-
-# Secrets locaux (au cas ou) - ne JAMAIS committer de token
-*.env
+node_modules/
 .env
-token.txt
+*.log

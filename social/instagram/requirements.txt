@@ -1,2 +1,0 @@
-# Aucune dependance externe : post.py et get_credentials.py utilisent uniquement
-# la bibliotheque standard de Python (urllib, json). Python 3.10+ recommande.
