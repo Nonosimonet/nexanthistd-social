@@ -9,7 +9,7 @@ on:
     # ATTENTION : le cron est en UTC et ne suit pas l'heure d'ete. Fin octobre,
     # tout se decale d'une heure plus tot en heure de Paris (16h au lieu de 17h).
     #
-    # La cadence reelle (1 post tous les 3 jours) est imposee par publish.mjs via
+    # La cadence reelle (1 post tous les 2 jours) est imposee par publish.mjs via
     # MIN_DAYS_BETWEEN_POSTS, PAS par le cron : un cron "*/3" repart au 1er du mois
     # et collerait deux posts d'affilee apres le 31.
     - cron: "47 14 * * *"
@@ -37,7 +37,7 @@ jobs:
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           MEDIA_BASE_URL: https://raw.githubusercontent.com/${{ github.repository }}/main
-          MIN_DAYS_BETWEEN_POSTS: "3"
+          MIN_DAYS_BETWEEN_POSTS: "2"
         run: node scripts/publish.mjs
 
       - name: Commit queue changes

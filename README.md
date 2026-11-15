@@ -37,10 +37,10 @@ posts/queue/*.json  ──(cron 14h47 UTC)──►  Instagram Reel/Post  ──
 
 Un carrousel (2 à 10 images) se déclare avec `{"type": "CAROUSEL", "images": [...]}`.
 
-### Cadence : 1 post tous les 3 jours
+### Cadence : 1 post tous les 2 jours
 
 Le cron tourne **tous les jours**, mais `publish.mjs` refuse de publier si le dernier post
-date de moins de `MIN_DAYS_BETWEEN_POSTS` **jours de calendrier** (**3** par défaut, réglé
+date de moins de `MIN_DAYS_BETWEEN_POSTS` **jours de calendrier** (**2** depuis le 16 nov. 2026, réglé
 dans `publish.yml`). La date du dernier envoi réussi est stockée dans
 `posts/last_published.json`, committée par le workflow.
 
