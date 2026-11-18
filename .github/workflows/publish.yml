@@ -12,7 +12,7 @@ on:
     # La cadence reelle (1 post tous les 2 jours) est imposee par publish.mjs via
     # MIN_DAYS_BETWEEN_POSTS, PAS par le cron : un cron "*/3" repart au 1er du mois
     # et collerait deux posts d'affilee apres le 31.
-    - cron: "47 14 * * *"
+    - cron: "43 14 * * *"
   workflow_dispatch: {}
 
 permissions:

@@ -52,7 +52,7 @@ supprimé `posts/last_published.json`.
 
 ### Heure de publication
 
-Cron à **14h47 UTC** pour viser ~15h UTC = **17h Paris** (heure d'été). On part quelques
+Cron à **14h43 UTC** pour viser ~15h UTC = **17h Paris** (heure d'été). On part quelques
 minutes plus tôt car GitHub ne garantit pas l'heure des workflows planifiés (file d'attente,
 pire aux minutes rondes — d'où `:47`) et Meta doit encore encoder la vidéo.
 
