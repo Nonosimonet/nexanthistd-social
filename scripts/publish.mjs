@@ -133,7 +133,28 @@ async function buildContainer(igId, post, caption) {
   return container.id;
 }
 
+// Plage horaire (heure de Paris) où une publication PLANIFIÉE a le droit de
+// partir. GitHub lance parfois le cron avec des heures de retard (le 23 nov.
+// 2026 : 9 h, publication à 5 h du matin) : hors plage, on ne fait rien et le
+// post part le lendemain soir. Un lancement à la main (workflow_dispatch)
+// passe toujours.
+const HEURE_MIN = Number(process.env.PUBLISH_HOUR_MIN || 18); // incluse
+const HEURE_MAX = Number(process.env.PUBLISH_HOUR_MAX || 23); // exclue
+
+function heureParis() {
+  return Number(new Intl.DateTimeFormat("fr-FR",
+    { timeZone: "Europe/Paris", hour: "numeric", hourCycle: "h23" }).format(new Date()));
+}
+
 async function main() {
+  if (process.env.GITHUB_EVENT_NAME !== "workflow_dispatch") {
+    const h = heureParis();
+    if (h < HEURE_MIN || h >= HEURE_MAX) {
+      console.log(`Il est ${h} h à Paris, hors plage ${HEURE_MIN}–${HEURE_MAX} h (cron en retard ?). Rien à publier.`);
+      return;
+    }
+  }
+
   const gap = await daysSinceLastPost();
   if (gap < MIN_DAYS) {
     console.log(`Dernier post il y a ${gap} j — cadence minimale ${MIN_DAYS} j. Rien à publier.`);
