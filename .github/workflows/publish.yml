@@ -12,7 +12,10 @@ on:
     # La cadence reelle (1 post tous les 2 jours) est imposee par publish.mjs via
     # MIN_DAYS_BETWEEN_POSTS, PAS par le cron : un cron "*/3" repart au 1er du mois
     # et collerait deux posts d'affilee apres le 31.
-    - cron: "43 18 * * *"
+    # 26 nov. 2026 : GitHub lance le cron avec 1 a 9 h de retard, de plus en plus tard
+    # dans la nuit. On le lance donc toutes les 30 min ; publish.mjs ne publie qu'entre
+    # 18h et 23h (Paris) et un seul post tous les 2 jours. Les autres runs ne font rien.
+    - cron: "13,43 * * * *"
   workflow_dispatch: {}
 
 permissions:

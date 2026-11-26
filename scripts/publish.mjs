@@ -141,15 +141,24 @@ async function buildContainer(igId, post, caption) {
 const HEURE_MIN = Number(process.env.PUBLISH_HOUR_MIN || 18); // incluse
 const HEURE_MAX = Number(process.env.PUBLISH_HOUR_MAX || 23); // exclue
 
-function heureParis() {
-  return Number(new Intl.DateTimeFormat("fr-FR",
-    { timeZone: "Europe/Paris", hour: "numeric", hourCycle: "h23" }).format(new Date()));
+// ATTENTION : en fr-FR, l'heure seule s'écrit « 02 h » → Number() donnait NaN et
+// le garde-fou laissait tout passer (Rafle publiée à 2h57 le 26 nov. 2026).
+// On lit donc la seule partie « hour », et tout ce qui n'est pas un nombre bloque.
+function heureParis(date = new Date()) {
+  const part = new Intl.DateTimeFormat("en-GB",
+    { timeZone: "Europe/Paris", hour: "2-digit", hourCycle: "h23" })
+    .formatToParts(date).find((p) => p.type === "hour");
+  return Number(part?.value);
+}
+
+function dansLaPlage(h) {
+  return Number.isInteger(h) && h >= HEURE_MIN && h < HEURE_MAX;
 }
 
 async function main() {
   if (process.env.GITHUB_EVENT_NAME !== "workflow_dispatch") {
     const h = heureParis();
-    if (h < HEURE_MIN || h >= HEURE_MAX) {
+    if (!dansLaPlage(h)) {
       console.log(`Il est ${h} h à Paris, hors plage ${HEURE_MIN}–${HEURE_MAX} h (cron en retard ?). Rien à publier.`);
       return;
     }
