@@ -1,21 +1,11 @@
 name: Publish to Instagram
 
 on:
-  schedule:
-    # Vise une publication vers 15h UTC = 17h Paris (heure d'ete).
-    # On part ~15 min plus tot car GitHub Actions ne garantit pas l'heure des
-    # workflows planifies (file d'attente, pire aux minutes rondes -> d'ou :47)
-    # et Meta doit encore encoder la video avant publication.
-    # ATTENTION : le cron est en UTC et ne suit pas l'heure d'ete. Fin octobre,
-    # tout se decale d'une heure plus tot en heure de Paris (16h au lieu de 17h).
-    #
-    # La cadence reelle (1 post tous les 2 jours) est imposee par publish.mjs via
-    # MIN_DAYS_BETWEEN_POSTS, PAS par le cron : un cron "*/3" repart au 1er du mois
-    # et collerait deux posts d'affilee apres le 31.
-    # 26 nov. 2026 : GitHub lance le cron avec 1 a 9 h de retard, de plus en plus tard
-    # dans la nuit. On le lance donc toutes les 30 min ; publish.mjs ne publie qu'entre
-    # 18h et 23h (Paris) et un seul post tous les 2 jours. Les autres runs ne font rien.
-    - cron: "13,43 * * * *"
+  # Plus de cron GitHub (26 nov. 2026) : il arrivait avec 1 a 9 h de retard et a
+  # publie deux reels en pleine nuit. Le workflow est lance a la main chaque soir
+  # vers 19h50 (Paris) par une tache planifiee sur le PC (gh workflow run).
+  # La cadence (1 post tous les 2 jours) reste imposee par publish.mjs
+  # (MIN_DAYS_BETWEEN_POSTS) : un lancement un soir « vide » ne publie rien.
   workflow_dispatch: {}
 
 permissions:
